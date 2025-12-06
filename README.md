@@ -1,38 +1,46 @@
-# Celene-Search
-Indexación y recuperación de la información
-
-# 🔍 Motor de Búsqueda Inteligente: Expansión de Consultas
+# 🔍 Celene-Search: Motor de Búsqueda Inteligente (Query Expansion)
+## Indexación y Recuperación de la Información
 
 ## Descripción del Proyecto
 
-Este proyecto implementa un **Motor de Búsqueda Inteligente** que supera las limitaciones de la búsqueda por coincidencia exacta de términos. Utilizando técnicas de Procesamiento del Lenguaje Natural (**NLP**) y recursos léxicos, el sistema es capaz de **expandir automáticamente** las consultas del usuario con sinónimos, aumentando significativamente la **relevancia** y la **recuperación** de información.
+Este proyecto implementa un **Motor de Búsqueda Inteligente** que supera las limitaciones de la búsqueda por coincidencia exacta. Utilizando técnicas de **Procesamiento del Lenguaje Natural (NLP)** y recursos léxicos **(WordNet)**, el sistema es capaz de **expandir automáticamente** las consultas del usuario con sinónimos, aumentando significativamente la **relevancia** y la **recuperación** de información.
 
-El núcleo del sistema simula un módulo de consulta avanzado de Lucene/Whoosh, incorporando WordNet y POS Tagging para un pre-procesamiento contextual de la búsqueda.
-
----
-
-## Características Principales
-
-* **Expansión de Consultas:** Uso de **NLTK WordNet** para encontrar sinónimos y lemas para los términos clave de la consulta.
-* **Pre-procesamiento Lingüístico:**
-    * Eliminación de palabras vacías para enfocar la expansión solo en los términos relevantes.
-    * Etiquetado Gramatical: Permite buscar sinónimos específicos según el contexto de la palabra (ej: buscar sinónimos de 'banco' como sustantivo).
-* **Motor de Búsqueda Robusto:** Implementación de indexación y recuperación con la librería **Whoosh**.
-* **Interfaz Web:** Servidor ligero implementado con **???** para una interacción simple y visualización de resultados.
+El núcleo del sistema simula un módulo de consulta avanzado, utilizando la librería **Whoosh** para la indexación y una arquitectura modular estricta para el pre-procesamiento contextual.
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## Características y Ventajas
 
-El proyecto sigue una arquitectura modular en capas, garantizando la separación de responsabilidades:
+* **Expansión Contextual:** Uso de **NLTK WordNet** y **Etiquetado Gramatical (POS Tagging)** para buscar sinónimos de los términos clave según su función sintáctica (ej: "banco" como sustantivo vs. "banco" como verbo).
+* **Pipeline de PLN Modular:** Proceso de consulta estructurado en componentes atómicos (`Tokenizer`, `StopwordFilter`, `POSTagger`) para facilitar el mantenimiento y la sustitución.
+* **Motor de Búsqueda Robusto:** Implementación de indexación y recuperación eficiente con la librería **Whoosh**.
+* **Arquitectura Desacoplada:** Uso de interfaces explícitas para separar las responsabilidades de Búsqueda e Indexación.
 
-1.  **Capa de Presentación (`WebController`):** Maneja las peticiones HTTP y la interfaz de usuario (???).
-2.  **Capa de Servicio (`QueryExpander`):** Contiene la lógica de negocio y NLP.
-3.  **Capa de Datos (`IndexManager`/`SearchEngine`):** Administra el índice de Whoosh.
+---
 
-El flujo de una búsqueda es: `Consulta de Usuario (String) -> QueryExpander (Expansión y Booleano) -> Whoosh (Búsqueda) -> Resultados`.
+## 🏗️ Arquitectura del Sistema (Basada en Componentes UML)
 
+El proyecto sigue una arquitectura modular en capas, garantizando la separación de responsabilidades y la **inversión de dependencias** mediante el uso de interfaces.
 
+### 1. Estructura Lógica
+
+El sistema se divide en cuatro componentes principales con responsabilidades claras:
+
+| Componente | Rol Principal | Interfaz Clave |
+| :--- | :--- | :--- |
+| **`Web Interface`** | Gestiona la presentación y las peticiones HTTP (Capa de Presentación). | - |
+| **`Search Components`** | Orquestador de la lógica de negocio; utiliza el PLN y requiere acceso al índice (Capa de Servicio). | **Requiere `IIndexAccess`** |
+| **`NLP Components`** | Procesa y mejora la consulta del usuario (Lógica de Expansión). | - |
+| **`Indexing Components`** | Gestiona la carga y la creación del índice físico (Capa de Datos). | **Provee `IIndexAccess`** |
+
+### 2. Flujo de Búsqueda (`SearchEngine`)
+
+El **`SearchEngine`** orquesta el proceso siguiendo estos pasos:
+
+1.  **Recepción:** Recibe la consulta del `???? App`.
+2.  **Expansión:** Llama al **`QueryExpander`** para ejecutar el pipeline de PLN.
+3.  **Búsqueda:** Utiliza la interfaz **`IIndexAccess`** (provista por el `Whoosh Index`) para ejecutar la búsqueda con la consulta expandida.
+4.  **Entrega:** Formatea los resultados (`SearchResult`) y los devuelve a la interfaz web.
 
 ---
 
@@ -40,10 +48,10 @@ El flujo de una búsqueda es: `Consulta de Usuario (String) -> QueryExpander (Ex
 
 | Componente | Herramienta | Función |
 | :--- | :--- | :--- |
-| **Búsqueda/Indexación** | `whoosh` | Motor de búsqueda principal (análogo a Lucene). |
-| **NLP** | `nltk` | Herramientas para tokenización, stop-words, y POS Tagging. |
+| **Búsqueda/Indexación** | `whoosh` | Motor de búsqueda principal y base para la interfaz `IIndexAccess`. |
+| **Web Interface** | **`????`** | Framework ligero de Python para el servidor web y la interfaz de búsqueda. |
+| **NLP Pipeline** | `nltk` | Herramientas para tokenización, stop-words, y POS Tagging. |
 | **Recurso Léxico** | `nltk.corpus.wordnet` | Fuente de sinónimos para la expansión. |
-| **Interfaz Web** | `???` | Framework para el servidor web y la interfaz de búsqueda. |
 | **Lenguaje** | `Python 3.x` | Lenguaje de programación principal. |
 
 ---
