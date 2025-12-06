@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import ClassVar
 
 @dataclass(frozen=True)
 class Document:
@@ -9,27 +8,25 @@ class Document:
     """
 
     # 1. CAMPOS REQUERIDOS
-    id: str = field(metadata={'required': True})
-    title: str = field(metadata={'required': True})
-    content: str = field(metadata={'required': True})
+    id = field(metadata={'required': True})
+    title = field(metadata={'required': True})
+    content = field(metadata={'required': True})
 
     # 2. METADATOS CRÍTICOS
-    source_url: str | None = field(default=None)
-    author: str | None = field(default=None)
+    source_url = field(default=None)
+    author = field(default=None)
 
     # 3. CAMPO CLAVE PARA EL RANKING POR FRESCURA
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp = field(default_factory=datetime.now)
 
-    # 4. CONSTANTES DE CLASE (Ignoradas por dataclass)
-    # Definimos los campos que Whoosh espera en el método to_indexable
-    _WHOOSH_FIELDS: ClassVar[list[str]] = ['doc_id', 'title', 'content', 'url', 'author', 'timestamp']
+    # 4. CONSTANTES DE CLASE
+    _WHOOSH_FIELDS = ['doc_id', 'title', 'content', 'url', 'author', 'timestamp']
 
-    def to_indexable(self) -> dict:
+    def to_indexable(self):
         """
         Convierte la instancia de Documento en un diccionario de campos
         compatible con el proceso de indexación de Whoosh.
         """
-
         indexable_data = {
             'doc_id': self.id,
             'title': self.title,
