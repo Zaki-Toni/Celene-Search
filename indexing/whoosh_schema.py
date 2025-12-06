@@ -11,12 +11,11 @@ class DocumentSchema:
     partida para la indexación funcional.
     """
     @staticmethod
-    def create_schema() -> Schema:
+    def create_schema():
         """
         Devuelve el objeto Schema listo para inicializar el índice de Whoosh.
 
         :returns: Objeto Schema con la definición de campos.
-        :rtype: whoosh.fields.Schema
         """
         # 1. CONFIGURACIÓN DEL ANALIZADOR BÁSICO. DEBEMOS CREAR UN ANALIZADOR MAS COMPLEJO
         # Usamos StandardAnalyzer, que aplica tokenización y minúsculas.
